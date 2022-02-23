@@ -82,7 +82,7 @@ export class WordleService implements WordleInterface{
     else if (this.currentGame.CurrentAttempt >= this.attemptsAllowed) {
       this.currentGame.Message = "Game over!";
       this.currentGame.GameComplete = true;
-      alert('better luck next time, Namaste!')
+      alert('Better luck next time!\nThe word you missed was'+this.targetWord);
     }    
 
     return this.currentGame;    
