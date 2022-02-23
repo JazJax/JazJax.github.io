@@ -1,0 +1,23 @@
+<div class="container">
+    <div class="title-container">
+        <div class="title">Wrdl!</div>
+        <div class="subtitle">
+            Any letters you find not in the word can't be used again!
+        </div>
+    </div>
+
+    <div class="gameboard">
+        <div class='attempt' *ngFor="let attempt of GameBoard.Attempts; let i = index">
+            <div class='letter' *ngFor="let letter of attempt.Letters; let i = index"
+            [class.correct]="letter.Status === LetterStatus.Correct"
+			[class.misplaced]="letter.Status === LetterStatus.Misplaced"
+			[class.incorrect]="letter.Status === LetterStatus.Incorrect"
+			[class.has-text]="letter.Letter !== ''">
+                {{letter.Letter}}
+            </div>
+        </div>
+    </div>    
+
+</div>
+
+<app-keyboard-ui (keyClick)="HandleInput($event)" [letterStates]="GameBoard.LetterStates"></app-keyboard-ui>

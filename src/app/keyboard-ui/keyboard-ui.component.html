@@ -1,0 +1,19 @@
+<div class="keyboard-container">
+    <div class='key-row' *ngFor="let row of keyboardRows">
+        <!-- <div class='key'>X</div>
+        <div class='key'>Y</div>
+        <div class='key'>Z</div>
+        <div class='key'>A</div> -->
+        <div class='key' *ngFor="let key of row" (click)="SendKey(key)"
+        [class.tried]="LetterHasStatus(key, LetterStatus.Incorrect)"
+        [class.partial]="LetterHasStatus(key, LetterStatus.Misplaced)"
+        [class.correct]="LetterHasStatus(key, LetterStatus.Correct)">
+            <div *ngIf="key !== 'Backspace'; else backspace">
+                {{key}}
+              </div>
+              <ng-template #backspace>
+                  <img src="../../assets/backspace.svg"/>
+              </ng-template>
+        </div>
+    </div>>
+</div>
