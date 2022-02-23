@@ -39,6 +39,20 @@ export class WordleService implements WordleInterface{
       .toUpperCase();
     return ValidWords.includes(guessWord);
   }
+
+  GetLetterStatus(letter: string){
+    return this.currentGame.LetterStates
+    .filter(l => {
+      return l.Letter == letter;
+    })[0].Status;
+  }
+
+  SetLetterStatus(letter: string, status: LetterStatus){
+    this.currentGame.LetterStates
+    .filter(l => {
+      return l.Letter == letter;
+    })[0].Status = status;
+  }
   
   MakeGuess(attempt: Attempt){
     let checkedAttempt: Attempt = this.CheckWord(attempt)
@@ -49,24 +63,12 @@ export class WordleService implements WordleInterface{
       //alert('doing status: '+status+' ('+currentStatus);
       checkedAttempt.Letters.forEach(letter => {
         //update every letter with this status in the word
-        if (letter.Status == currentStatus) {
-          this.currentGame.LetterStates
-            .filter(l => {
-              return l.Letter == letter.Letter;
-            })[0]
-            .Status = currentStatus;
-            //alert('set status of '+letter.Letter+' to '+currentStatus+'!');
+        if (letter.Status == currentStatus && currentStatus > this.GetLetterStatus(letter.Letter)) {
+          this.SetLetterStatus(letter.Letter,currentStatus);
+          //alert('set status of '+letter.Letter+' to '+currentStatus+'!');
         }
       });
-    }
-    
-    checkedAttempt.Letters.forEach(letter => {
-      if (letter.Status == LetterStatus.Incorrect && !this.currentGame.DisallowedLetters.includes(letter.Letter)) {
-        this.currentGame.DisallowedLetters.push(letter.Letter);
-      }
-    });
-
-    
+    }    
     
     this.currentGame.Attempts[this.currentGame.CurrentAttempt] = checkedAttempt;
     this.currentGame.CurrentAttempt++;
@@ -153,22 +155,6 @@ export class WordleService implements WordleInterface{
 
     let randomNumber: number = Math.floor(Math.random() * ValidSolutions.length);
     this.targetWord = ValidSolutions[randomNumber];
-
-    return this.currentGame;
-  }
-
-  FakeGame(attempts: number, wordLength: number){
-    this.attemptsAllowed = attempts;
-    this.wordLength = wordLength;
-    this.currentGame = new GameState();
-
-    for (let i = 0 ; i < attempts ; i++) {
-      let attempt = new Attempt();
-      for (let j = 0 ; j < wordLength ; j++) {
-        attempt.Letters[j] = {Letter: GetRandomLetter(), Status: GetRandomStatus()};
-      }
-      this.currentGame.Attempts[i] = attempt;
-    }
 
     return this.currentGame;
   }

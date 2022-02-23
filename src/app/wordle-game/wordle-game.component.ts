@@ -57,7 +57,12 @@ export class WordleGameComponent implements OnInit {
         break;
       case 'letter':
         if(this.GameBoard.CurrentLetter < this.WordLength) {
-          if (this.GameBoard.DisallowedLetters.includes(key)) {
+          let letterIsIncorrect = this.GameBoard.LetterStates
+            .filter(e => e.Status == LetterStatus.Incorrect)
+            .map(e => e.Letter)
+            .includes(key);
+          
+          if (letterIsIncorrect) {
             alert('You already tried '+key+', pick another!');
           }
           else {
