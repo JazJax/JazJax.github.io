@@ -2,7 +2,16 @@
     <div class="title-container">
         <div class="title">Wrdl!</div>
         <div class="subtitle">
-            Any letters you find not in the word can't be used again!
+            Any letters you find that aren't in the word can't be used again!
+        </div>
+        <div class="set-mode-container">
+            <div class="mode-label">Current mode:</div>
+            <button class="mode-button" (click)=SwitchMode($event)
+            [class.mode-daily]="DailyMode"
+            [class.mode-infinite]="!DailyMode">
+                <p *ngIf="DailyMode">Daily!</p>
+                <p *ngIf="!DailyMode">Infinite!</p>
+            </button>
         </div>
     </div>
 

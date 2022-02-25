@@ -1,11 +1,15 @@
 .keyboard-container {
-    margin-bottom: 12px;
+    padding: 12px 12px 0 12px;
+    border-bottom: 12px;
+    box-sizing: border-box;
     display: flex;
-    flex-direction: column;;
-    height: 30%;    
-    min-height: 140px;
-    //width: 100%;
-    //background-color: red;
+    flex-direction: column;
+    //height: 30%;    
+    height: 140px;
+    position: absolute;
+    bottom: 0px;
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.74);
 
     .key-row {
         display: flex;
@@ -16,6 +20,7 @@
 
         .key {
             color: black;
+            background-color: white;
             width: 60px;
             height: 40px;
             //background-color: #ddd;
@@ -32,6 +37,7 @@
 
         .tried {
             background-color: red;
+            visibility: hidden;
         }
 
         .partial {

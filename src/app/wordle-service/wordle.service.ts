@@ -6,7 +6,7 @@ import {LetterStatus, Letter, Attempt, GameState, Alphabet } from '../Models/wor
 export interface WordleInterface{
   WordIsValid: (attempt: Attempt) => boolean;
   MakeGuess: (attempt: Attempt) => GameState;
-  NewGame: (attempts: number, wordLength: number) => GameState;
+  NewGame: (attempts: number, wordLength: number, dailyMode: boolean) => GameState;
 }
 
 export function GetRandomStatus(): LetterStatus {
@@ -148,13 +148,29 @@ export class WordleService implements WordleInterface{
     return grid;
   }
 
-  NewGame(attempts: number, wordLength: number){
-    this.attemptsAllowed = attempts;
-    this.wordLength = wordLength;
-    this.currentGame = this.GenerateBlankGrid(attempts, wordLength);
+  GetDailyWord(){
+    let startDate: number = new Date('2022-02-24T00:00:00').getTime();
+    let today: number = new Date().getTime();
 
-    let randomNumber: number = Math.floor(Math.random() * ValidSolutions.length);
-    this.targetWord = ValidSolutions[randomNumber];
+    let daysBetween = Math.floor((today-startDate)/(24*60*60*1000));
+    
+    return ValidSolutions[daysBetween % ValidSolutions.length];
+  }
+
+  NewGame(attempts: number, wordLength: number, dailyMode: boolean){
+    this.attemptsAllowed = attempts;
+
+    if (dailyMode){
+      this.wordLength = 5;
+      this.targetWord = this.GetDailyWord();
+    }
+    else{      
+      this.wordLength = 5; //wordLength;
+      let randomNumber: number = Math.floor(Math.random() * ValidSolutions.length);
+      this.targetWord = ValidSolutions[randomNumber];
+    }
+
+    this.currentGame = this.GenerateBlankGrid(attempts, wordLength);    
 
     return this.currentGame;
   }

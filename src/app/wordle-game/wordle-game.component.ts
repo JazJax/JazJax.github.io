@@ -8,11 +8,11 @@ import {LetterStatus, Letter, Attempt, GameState as GameState, Alphabet } from '
   styleUrls: ['./wordle-game.component.scss']
 })
 export class WordleGameComponent implements OnInit {
-  data: string = '';
   GameBoard: GameState = new GameState();
   AttemptsAllowed: number = 5;
   WordLength: number = 5;
   WordInProgress: Attempt = new Attempt();
+  DailyMode: boolean = true;
 
   readonly LetterStatus = LetterStatus;
 
@@ -21,6 +21,16 @@ export class WordleGameComponent implements OnInit {
   @HostListener('document:keydown', ['$event'])
   keyboardInput(event: KeyboardEvent) {
     this.HandleInput(event.key);
+  }
+
+  SwitchMode(event: Event){
+    this.DailyMode = !this.DailyMode;
+    this.Reset(this.DailyMode);
+  }
+
+  Reset(mode: boolean, attemptsAllowed: number = 5, wordLength: number = 5){
+    this.WordInProgress = new Attempt();
+    this.GameBoard = this.service.NewGame(attemptsAllowed, wordLength, mode);
   }
 
   HandleInput(key: string){
@@ -104,7 +114,7 @@ export class WordleGameComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.GameBoard = this.service.NewGame(this.AttemptsAllowed, this.WordLength);
+    this.Reset(this.DailyMode);
   }
 
 }
