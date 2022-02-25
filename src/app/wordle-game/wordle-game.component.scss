@@ -15,68 +15,76 @@
         justify-content: center;        
         border-bottom: 1px solid #ddd;
         padding: 6px 0;
-        background-color: rgba(255, 255, 255, 0.74);;
-    }
+        background-color: rgba(255, 255, 255, 0.74);
 
-    .set-mode-container{
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        position:absolute;
-        top: 0;
-        right: 0;
-        height: 25px;
-        box-sizing: border-box;
-        border: 2px solid black;
-        background-color: whitesmoke;
-        
-        .mode-label{
-            box-sizing: border-box;
-            margin: 4px;
+        .set-mode-container{
             display: flex;
-            align-items: stretch;
-            justify-content: center;
+            flex-direction: row;
+            align-items: center;
+            position:absolute;
+            top: 0;
+            right: 0;
+            height: 25px;
+            box-sizing: border-box;
+            border: 2px solid black;
+            background-color: whitesmoke;
+            
+            .mode-label{
+                box-sizing: border-box;
+                margin: 4px;
+                display: flex;
+                align-items: stretch;
+                justify-content: center;
+                font-weight: bold;
+                font-size: 12px;
+                color: rgb(75, 73, 73);
+                margin-top: 4px;
+            }
+    
+            .mode-button{
+                color: black;
+                width: 60px;
+                height: 25px;
+                box-sizing: border-box;
+                border: 2px solid black;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: bold;
+                
+            }
+    
+            .mode-daily{
+                background-color: lightgreen;
+                color: grey;
+            }
+    
+            .mode-infinite{
+                background-color: indigo;
+                color: white;
+            }
+        }
+    
+        .title {        
+            text-transform: uppercase;
             font-weight: bold;
+            font-size: 24px;
+        }
+    
+        .subtitle {
             font-size: 12px;
             color: rgb(75, 73, 73);
             margin-top: 4px;
         }
 
-        .mode-button{
-            color: black;
-            width: 60px;
-            height: 25px;
-            box-sizing: border-box;
-            border: 2px solid black;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .solution-reveal {
+            font-size: 12px;
+            color: rgb(75, 73, 73);
+            text-transform: uppercase;
             font-weight: bold;
-            
+            margin-top: 4px;
         }
-
-        .mode-daily{
-            background-color: lightgreen;
-            color: grey;
-        }
-
-        .mode-infinite{
-            background-color: indigo;
-            color: white;
-        }
-    }
-
-    .title {        
-        text-transform: uppercase;
-        font-weight: bold;
-        font-size: 24px;
-    }
-
-    .subtitle {
-        font-size: 12px;
-        color: rgb(75, 73, 73);
-        margin-top: 4px;
-    }
+    }    
 
     .gameboard {
         display: flex;
