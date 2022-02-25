@@ -4,13 +4,16 @@
         <div class="subtitle">
             Any letters you find that aren't in the word can't be used again!
         </div>
+        <div *ngIf="GameBoard.GameComplete" class="solution-reveal">
+            The solution was: {{GameBoard.Solution}}
+        </div>
         <div class="set-mode-container">
             <div class="mode-label">Current mode:</div>
             <button class="mode-button" (click)=SwitchMode($event)
-            [class.mode-daily]="DailyMode"
-            [class.mode-infinite]="!DailyMode">
-                <p *ngIf="DailyMode">Daily!</p>
-                <p *ngIf="!DailyMode">Infinite!</p>
+            [class.mode-daily]="GameBoard.DailyMode"
+            [class.mode-infinite]="!GameBoard.DailyMode">
+                <p *ngIf="GameBoard.DailyMode">Daily!</p>
+                <p *ngIf="!GameBoard.DailyMode">Infinite!</p>
             </button>
         </div>
     </div>

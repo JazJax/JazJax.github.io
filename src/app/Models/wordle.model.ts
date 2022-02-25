@@ -17,6 +17,8 @@ export enum LetterStatus {
   export class GameState {
     Attempts: Attempt[] = [];
     Message: string = "";
+    DailyMode: boolean = true;
+    Solution: string = "testval";
     CurrentAttempt: number = 0;
     CurrentLetter: number = 0;
     GameComplete: boolean = false;

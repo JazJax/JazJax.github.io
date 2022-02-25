@@ -7,7 +7,9 @@
         <div class='key' *ngFor="let key of row" (click)="SendKey(key)"
         [class.tried]="LetterHasStatus(key, LetterStatus.Incorrect)"
         [class.partial]="LetterHasStatus(key, LetterStatus.Misplaced)"
-        [class.correct]="LetterHasStatus(key, LetterStatus.Correct)">
+        [class.correct]="LetterHasStatus(key, LetterStatus.Correct)"
+        [class.enter]="key == 'Enter'"
+        [class.backspace]="key == 'Backspace'">
             <div *ngIf="key !== 'Backspace'; else backspace">
                 {{key}}
               </div>

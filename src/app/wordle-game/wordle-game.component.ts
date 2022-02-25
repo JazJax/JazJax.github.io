@@ -12,7 +12,6 @@ export class WordleGameComponent implements OnInit {
   AttemptsAllowed: number = 5;
   WordLength: number = 5;
   WordInProgress: Attempt = new Attempt();
-  DailyMode: boolean = true;
 
   readonly LetterStatus = LetterStatus;
 
@@ -24,8 +23,8 @@ export class WordleGameComponent implements OnInit {
   }
 
   SwitchMode(event: Event){
-    this.DailyMode = !this.DailyMode;
-    this.Reset(this.DailyMode);
+    this.GameBoard.DailyMode = !this.GameBoard.DailyMode;
+    this.Reset(this.GameBoard.DailyMode);
   }
 
   Reset(mode: boolean, attemptsAllowed: number = 5, wordLength: number = 5){
@@ -39,6 +38,11 @@ export class WordleGameComponent implements OnInit {
       ? 'letter' 
       : key;
     key = key.toUpperCase();
+    
+    if(this.GameBoard.GameComplete){
+      alert('You already finished this game!');
+      return;
+    }
 
     switch (keyType){
       case 'Enter':
@@ -114,7 +118,7 @@ export class WordleGameComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.Reset(this.DailyMode);
+    this.Reset(this.GameBoard.DailyMode);
   }
 
 }

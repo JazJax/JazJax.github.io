@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ValidSolutions } from '../Models/ValidSolutions';
 import { ValidWords } from '../Models/ValidWords';
+import { CookieService } from 'ngx-cookie-service'
 import {LetterStatus, Letter, Attempt, GameState, Alphabet } from '../Models/wordle.model';
 
 export interface WordleInterface{
@@ -8,17 +9,6 @@ export interface WordleInterface{
   MakeGuess: (attempt: Attempt) => GameState;
   NewGame: (attempts: number, wordLength: number, dailyMode: boolean) => GameState;
 }
-
-export function GetRandomStatus(): LetterStatus {
-  switch (Math.floor(Math.random() * 4)){
-    case 1: {return LetterStatus.Pending}
-    case 2: {return LetterStatus.Incorrect}
-    case 3: {return LetterStatus.Misplaced}
-    default: {return LetterStatus.Correct}
-  };
-}
-
-export let GetRandomLetter = (): string  => Alphabet.charAt(Math.floor(Math.random() * Alphabet.length));
 
 @Injectable({
   providedIn: 'root'
@@ -30,8 +20,18 @@ export class WordleService implements WordleInterface{
   private wordLength: number = 0;
   private targetWord: string = "PAINT";
   
-  constructor() { }
+  constructor(private cookieService: CookieService) { }
 
+  SaveGameState(gameState: GameState){
+    let expiryTimeStamp = new Date();
+    expiryTimeStamp.setHours(24,0,0,0); //this needs to be a seperate operation, unsure why.
+    this.cookieService.set('gamestate', JSON.stringify(gameState),{expires:expiryTimeStamp});
+  }
+
+  GetGameState(){
+    return JSON.parse(this.cookieService.get('gamestate'));
+  }
+  
   WordIsValid(attempt: Attempt){
     let guessWord: string = attempt.Letters
       .map(e => e.Letter)
@@ -53,23 +53,28 @@ export class WordleService implements WordleInterface{
       return l.Letter == letter;
     })[0].Status = status;
   }
-  
-  MakeGuess(attempt: Attempt){
-    let checkedAttempt: Attempt = this.CheckWord(attempt)
 
-    //update letterStates
+  UpdateLetterStates(attemptToUpdateFrom: Attempt){
     for (let status in LetterStatus) {//loop over statuses
       let currentStatus: LetterStatus = LetterStatus[status as keyof typeof LetterStatus];
-      //alert('doing status: '+status+' ('+currentStatus);
-      checkedAttempt.Letters.forEach(letter => {
+      
+      attemptToUpdateFrom.Letters.forEach(letter => {
         //update every letter with this status in the word
         if (letter.Status == currentStatus && currentStatus > this.GetLetterStatus(letter.Letter)) {
           this.SetLetterStatus(letter.Letter,currentStatus);
           //alert('set status of '+letter.Letter+' to '+currentStatus+'!');
         }
       });
-    }    
+    }   
+  }
+  
+  MakeGuess(attempt: Attempt){
+    let checkedAttempt: Attempt = this.CheckWord(attempt)
+
+    //update letterStates
+    this.UpdateLetterStates(checkedAttempt);
     
+    //update attempt count, reset currentLetter, update row in GameBoard
     this.currentGame.Attempts[this.currentGame.CurrentAttempt] = checkedAttempt;
     this.currentGame.CurrentAttempt++;
     this.currentGame.CurrentLetter = 0;
@@ -84,9 +89,13 @@ export class WordleService implements WordleInterface{
     else if (this.currentGame.CurrentAttempt >= this.attemptsAllowed) {
       this.currentGame.Message = "Game over!";
       this.currentGame.GameComplete = true;
-      alert('Better luck next time!\nThe word you missed was'+this.targetWord);
+      this.currentGame.Solution = this.targetWord;
+      alert('Better luck next time!\nThe word you missed was '+this.targetWord);
     }    
 
+    if(this.currentGame.DailyMode){
+      this.SaveGameState(this.currentGame);
+    }    
     return this.currentGame;    
   }
 
@@ -158,19 +167,22 @@ export class WordleService implements WordleInterface{
   }
 
   NewGame(attempts: number, wordLength: number, dailyMode: boolean){
+    //this.cookieService.delete('gamestate');
     this.attemptsAllowed = attempts;
+    this.wordLength = 5; //wordLength;
+    this.currentGame = this.GenerateBlankGrid(attempts, wordLength);
+    this.currentGame.DailyMode = dailyMode;
 
     if (dailyMode){
-      this.wordLength = 5;
+      if (this.cookieService.check('gamestate')){
+        this.currentGame = this.GetGameState();
+      }      
       this.targetWord = this.GetDailyWord();
     }
-    else{      
-      this.wordLength = 5; //wordLength;
+    else{
       let randomNumber: number = Math.floor(Math.random() * ValidSolutions.length);
       this.targetWord = ValidSolutions[randomNumber];
-    }
-
-    this.currentGame = this.GenerateBlankGrid(attempts, wordLength);    
+    }        
 
     return this.currentGame;
   }
