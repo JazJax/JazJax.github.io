@@ -3,6 +3,7 @@ import { ValidSolutions } from '../Models/ValidSolutions';
 import { ValidWords } from '../Models/ValidWords';
 import { CookieService } from 'ngx-cookie-service'
 import {LetterStatus, Letter, Attempt, GameState, Alphabet } from '../Models/wordle.model';
+import { Complements } from '../Models/Complements';
 
 export interface WordleInterface{
   WordIsValid: (attempt: Attempt) => boolean;
@@ -81,9 +82,12 @@ export class WordleService implements WordleInterface{
 
     //if word is correct, they won!
     if (checkedAttempt.Letters.every(e => e.Status == LetterStatus.Correct)) {
-      this.currentGame.Message = "You won!";
-      this.currentGame.GameComplete = true;
-      alert('Congrats! U da best!')
+      this.currentGame.GameComplete = true;      
+      this.currentGame.Solution = this.targetWord;
+
+      let randomMessage = Complements[Math.floor(Math.random()*Complements.length)];
+      this.currentGame.Message = 'You correctly guessed the word '+this.targetWord+'\n'+randomMessage;
+      alert(this.currentGame.Message);
     }
     //if now have run out of attempts, return GameOver.
     else if (this.currentGame.CurrentAttempt >= this.attemptsAllowed) {
