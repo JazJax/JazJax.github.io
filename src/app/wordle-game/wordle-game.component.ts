@@ -12,6 +12,7 @@ export class WordleGameComponent implements OnInit {
   AttemptsAllowed: number = 5;
   WordLength: number = 5;
   WordInProgress: Attempt = new Attempt();
+  HighlightedLetter: number = 0;
 
   readonly LetterStatus = LetterStatus;
 
@@ -28,8 +29,17 @@ export class WordleGameComponent implements OnInit {
   }
 
   Reset(mode: boolean, attemptsAllowed: number = 5, wordLength: number = 5){
-    this.WordInProgress = new Attempt();
+    //this.WordInProgress = new Attempt();
     this.GameBoard = this.service.NewGame(attemptsAllowed, wordLength, mode);
+    this.HighlightedLetter = this.GameBoard.CurrentLetter;//hack for letter display
+  }
+
+  SelectLetter(rowIndex: number, letterIndex: number, letter: Letter){
+    //alert('selected letter '+letter.Letter+' with index '+letterIndex+' on row '+rowIndex);
+    if (rowIndex == this.GameBoard.CurrentAttempt
+      && this.GameBoard.Attempts[rowIndex].Letters[letterIndex].Letter != ''){
+      this.GameBoard.CurrentLetter = letterIndex; 
+    }
   }
 
   HandleInput(key: string){
@@ -46,15 +56,17 @@ export class WordleGameComponent implements OnInit {
 
     switch (keyType){
       case 'Enter':
-        if (this.WordInProgress.Letters.length == this.WordLength){
+        if (this.GameBoard.CurrentLetter == this.WordLength){
+
+          let currentWord: Attempt = this.GameBoard.Attempts[this.GameBoard.CurrentAttempt];
           
-          if (this.service.WordIsValid(this.WordInProgress)){
-            this.GameBoard = this.service.MakeGuess(this.WordInProgress);
-            this.WordInProgress = new Attempt();
+          if (this.service.WordIsValid(currentWord)){
+            this.GameBoard = this.service.MakeGuess(currentWord);
+            this.HighlightedLetter = 0;
             //alert('Done! Now for guess number '+this.GameBoard.CurrentAttempt+'! Disallowed letters:\n'+this.GameBoard.DisallowedLetters)
           }
           else{
-            let guessWord: string = this.WordInProgress.Letters
+            let guessWord: string = currentWord.Letters
               .map(e => e.Letter)
               .join("")
               .toUpperCase();
@@ -95,16 +107,22 @@ export class WordleGameComponent implements OnInit {
         .Attempts[this.GameBoard.CurrentAttempt]
         .Letters[this.GameBoard.CurrentLetter].Letter = letter;
     this.GameBoard.CurrentLetter++;
-    this.WordInProgress.Letters.push({Letter: letter, Status: LetterStatus.Pending});
+    this.HighlightedLetter = this.GameBoard.CurrentLetter;//hack for letter display
+    if (this.GameBoard.CurrentLetter == this.WordLength){
+      this.HighlightedLetter--;
+    }
+
+    //this.WordInProgress.Letters.push({Letter: letter, Status: LetterStatus.Pending});
   }
 
   RemoveLetter(){
     if (this.GameBoard.CurrentLetter > 0) {
       this.GameBoard.CurrentLetter--;
+      this.HighlightedLetter = this.GameBoard.CurrentLetter;//hack for letter display
       this.GameBoard
         .Attempts[this.GameBoard.CurrentAttempt]
         .Letters[this.GameBoard.CurrentLetter].Letter = '';
-      this.WordInProgress.Letters.pop();
+      //this.WordInProgress.Letters.pop();
     }    
   }  
 
