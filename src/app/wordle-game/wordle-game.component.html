@@ -19,7 +19,6 @@
     </div>
 
     <div class="gameboard">
-        <p>wordlength: {{WordLength}} row: {{GameBoard.CurrentAttempt}}, letter: {{GameBoard.CurrentLetter}}, highlighted: {{HighlightedLetter}}</p>
         <div class='attempt' *ngFor="let attempt of GameBoard.Attempts; let i = index">
             <div class='letter' (click)="SelectLetter(i, j, letter)" *ngFor="let letter of attempt.Letters; let j = index"
             [class.correct]="letter.Status === LetterStatus.Correct"
