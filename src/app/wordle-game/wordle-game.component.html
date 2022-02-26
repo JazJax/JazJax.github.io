@@ -28,8 +28,8 @@
                 {{letter.Letter}}
             </div>
         </div>
-    </div>    
+    </div>
 
+    <app-keyboard-ui (keyClick)="HandleInput($event)" [letterStates]="GameBoard.LetterStates"></app-keyboard-ui>
+    
 </div>
-
-<app-keyboard-ui (keyClick)="HandleInput($event)" [letterStates]="GameBoard.LetterStates"></app-keyboard-ui>
