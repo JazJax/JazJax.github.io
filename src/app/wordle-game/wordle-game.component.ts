@@ -38,7 +38,8 @@ export class WordleGameComponent implements OnInit {
     //alert('selected letter '+letter.Letter+' with index '+letterIndex+' on row '+rowIndex);
     if (rowIndex == this.GameBoard.CurrentAttempt
       && this.GameBoard.Attempts[rowIndex].Letters[letterIndex].Letter != ''){
-      this.GameBoard.CurrentLetter = letterIndex; 
+      this.GameBoard.CurrentLetter = letterIndex;
+      this.HighlightedLetter = letterIndex; 
     }
   }
 
@@ -54,9 +55,11 @@ export class WordleGameComponent implements OnInit {
       return;
     }
 
+    let currentWord: Attempt = this.GameBoard.Attempts[this.GameBoard.CurrentAttempt];
+
     switch (keyType){
       case 'Enter':
-        if (this.GameBoard.CurrentLetter == this.WordLength){
+        if (currentWord.Letters.every(e => e.Letter != '')){
 
           let currentWord: Attempt = this.GameBoard.Attempts[this.GameBoard.CurrentAttempt];
           
