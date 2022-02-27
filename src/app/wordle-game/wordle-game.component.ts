@@ -8,41 +8,31 @@ import {LetterStatus, Letter, Attempt, GameState as GameState, Alphabet } from '
   styleUrls: ['./wordle-game.component.scss']
 })
 export class WordleGameComponent implements OnInit {
+  
+  //#region Props
   GameBoard: GameState = new GameState();
   AttemptsAllowed: number = 5;
   WordLength: number = 5;
   WordInProgress: Attempt = new Attempt();
-  HighlightedLetter: number = 0;
+  //HighlightedLetter: number = 0;
 
   readonly LetterStatus = LetterStatus;
+  //#endregion
 
-  constructor(private service: WordleService) { }
 
+  constructor(private service: WordleService) { }  
+
+  ngOnInit(): void {
+    this.Reset(this.GameBoard.DailyMode);
+  }
+
+  //Keyboard listener
   @HostListener('document:keydown', ['$event'])
   keyboardInput(event: KeyboardEvent) {
     this.HandleInput(event.key);
   }
 
-  SwitchMode(event: Event){
-    this.GameBoard.DailyMode = !this.GameBoard.DailyMode;
-    this.Reset(this.GameBoard.DailyMode);
-  }
-
-  Reset(mode: boolean, attemptsAllowed: number = 5, wordLength: number = 5){
-    //this.WordInProgress = new Attempt();
-    this.GameBoard = this.service.NewGame(attemptsAllowed, wordLength, mode);
-    this.HighlightedLetter = this.GameBoard.CurrentLetter;//hack for letter display
-  }
-
-  SelectLetter(rowIndex: number, letterIndex: number, letter: Letter){
-    //alert('selected letter '+letter.Letter+' with index '+letterIndex+' on row '+rowIndex);
-    if (rowIndex == this.GameBoard.CurrentAttempt
-      && this.GameBoard.Attempts[rowIndex].Letters[letterIndex].Letter != ''){
-      this.GameBoard.CurrentLetter = letterIndex;
-      this.HighlightedLetter = letterIndex; 
-    }
-  }
-
+  //Main input loop
   HandleInput(key: string){
     let alphabetArray = Alphabet.split('');
     let keyType: string = alphabetArray.includes(key.toUpperCase()) 
@@ -65,7 +55,7 @@ export class WordleGameComponent implements OnInit {
           
           if (this.service.WordIsValid(currentWord)){
             this.GameBoard = this.service.MakeGuess(currentWord);
-            this.HighlightedLetter = 0;
+            //this.HighlightedLetter = 0;
             //alert('Done! Now for guess number '+this.GameBoard.CurrentAttempt+'! Disallowed letters:\n'+this.GameBoard.DisallowedLetters)
           }
           else{
@@ -104,31 +94,53 @@ export class WordleGameComponent implements OnInit {
       }
 
   }
+  
 
-  AddLetter(letter: string){
-    this.GameBoard
-        .Attempts[this.GameBoard.CurrentAttempt]
-        .Letters[this.GameBoard.CurrentLetter].Letter = letter;
-    this.GameBoard.CurrentLetter++;
-    this.HighlightedLetter = this.GameBoard.CurrentLetter;//hack for letter display
-    if (this.GameBoard.CurrentLetter == this.WordLength){
-      this.HighlightedLetter--;
-    }
-
-    //this.WordInProgress.Letters.push({Letter: letter, Status: LetterStatus.Pending});
+  //#region Game Controls
+  SwitchMode(event: Event){
+    this.GameBoard.DailyMode = !this.GameBoard.DailyMode;
+    this.Reset(this.GameBoard.DailyMode);
   }
 
-  RemoveLetter(){
-    if (this.GameBoard.CurrentLetter > 0) {
-      this.GameBoard.CurrentLetter--;
-      this.HighlightedLetter = this.GameBoard.CurrentLetter;//hack for letter display
-      this.GameBoard
-        .Attempts[this.GameBoard.CurrentAttempt]
-        .Letters[this.GameBoard.CurrentLetter].Letter = '';
-      //this.WordInProgress.Letters.pop();
-    }    
+  Reset(mode: boolean, attemptsAllowed: number = 5, wordLength: number = 5){
+    this.GameBoard = this.service.NewGame(attemptsAllowed, wordLength, mode);
+  }
+
+  SelectLetter(rowIndex: number, letterIndex: number, letter: Letter){
+    if (rowIndex == this.GameBoard.CurrentAttempt){
+      this.GameBoard.CurrentLetter = letterIndex;
+    }
+  }
+  //#endregion
+
+
+  //#region Add and remove methods
+  AddLetter(letter: string){
+    //set current letter
+    this.SetCurrentLetterString(letter);
+
+    //go to the next letter
+    if (this.GameBoard.CurrentLetter+1 < this.WordLength){
+      this.GameBoard.CurrentLetter++;
+    }
   }  
 
+  RemoveLetter(){
+    //if current letter is not blank, delete it; else, go back one and delete the previous letter
+    if(this.GetCurrentLetterString() != ''){
+      this.SetCurrentLetterString('');
+    }
+    else{
+      if(this.GameBoard.CurrentLetter > 0){
+        this.GameBoard.CurrentLetter--;
+      }
+      this.SetCurrentLetterString('');
+    }
+  } 
+  //#endregion
+
+
+  //#region Utility methods
   AttemptToText(attempt: Attempt){
     let letters: Array<string> = new Array();
     attempt.Letters.forEach(e => {
@@ -138,8 +150,19 @@ export class WordleGameComponent implements OnInit {
     return letters.toString();
   }
 
-  ngOnInit(): void {
-    this.Reset(this.GameBoard.DailyMode);
+  GetCurrentLetterString(){
+    return this.GameBoard
+      .Attempts[this.GameBoard.CurrentAttempt]
+      .Letters[this.GameBoard.CurrentLetter]
+      .Letter;
   }
+
+  SetCurrentLetterString(letter: string){
+    this.GameBoard
+      .Attempts[this.GameBoard.CurrentAttempt]
+      .Letters[this.GameBoard.CurrentLetter]
+      .Letter = letter;
+  }
+  //#endregion
 
 }

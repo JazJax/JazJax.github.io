@@ -25,7 +25,7 @@
 			[class.misplaced]="letter.Status === LetterStatus.Misplaced"
 			[class.incorrect]="letter.Status === LetterStatus.Incorrect"
 			[class.has-text]="letter.Letter !== ''"
-            [class.selected]="i == GameBoard.CurrentAttempt && j == HighlightedLetter">
+            [class.selected]="i == GameBoard.CurrentAttempt && j == GameBoard.CurrentLetter">
                 {{letter.Letter}}
             </div>
         </div>
