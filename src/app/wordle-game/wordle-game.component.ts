@@ -49,21 +49,12 @@ export class WordleGameComponent implements OnInit {
 
     switch (keyType){
       case 'Enter':
-        if (currentWord.Letters.every(e => e.Letter != '')){
-
-          let currentWord: Attempt = this.GameBoard.Attempts[this.GameBoard.CurrentAttempt];
-          
+        if (currentWord.Letters.every(e => e.Letter != '')){          
           if (this.service.WordIsValid(currentWord)){
             this.GameBoard = this.service.MakeGuess(currentWord);
-            //this.HighlightedLetter = 0;
-            //alert('Done! Now for guess number '+this.GameBoard.CurrentAttempt+'! Disallowed letters:\n'+this.GameBoard.DisallowedLetters)
           }
           else{
-            let guessWord: string = currentWord.Letters
-              .map(e => e.Letter)
-              .join("")
-              .toUpperCase();
-            alert(guessWord + "?!\nThat's not a valid word!");
+            alert(this.AttemptToText(currentWord) + "?!\nThat's not a valid word!");
           }          
         }
         else {
@@ -71,24 +62,20 @@ export class WordleGameComponent implements OnInit {
           alert('Word incomplete!');
         }
         break;
+
       case 'Backspace':
         this.RemoveLetter();
         break;
+
       case 'letter':
-        if(this.GameBoard.CurrentLetter < this.WordLength) {
-          let letterIsIncorrect = this.GameBoard.LetterStates
-            .filter(e => e.Status == LetterStatus.Incorrect)
-            .map(e => e.Letter)
-            .includes(key);
-          
-          if (letterIsIncorrect) {
-            alert('You already tried '+key+', pick another!');
-          }
-          else {
-            this.AddLetter(key);
-          }
+        if (this.GetLetterStatus(key) == LetterStatus.Incorrect) {
+          alert('You already tried '+key+', pick another!');
+        }
+        else {
+          this.AddLetter(key);
         }
         break;
+
       default:
         break;
       }
@@ -162,6 +149,12 @@ export class WordleGameComponent implements OnInit {
       .Attempts[this.GameBoard.CurrentAttempt]
       .Letters[this.GameBoard.CurrentLetter]
       .Letter = letter;
+  }
+
+  GetLetterStatus(letter: string){
+    return this.GameBoard.LetterStates
+      .filter(e => e.Letter == letter)
+      .map(e => e.Status)[0];
   }
   //#endregion
 
